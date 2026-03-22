@@ -1,8 +1,18 @@
-namespace Assets.Scripts.Interfaces
+using UnityEngine;
+
+public class Turn
 {
-    public interface ITurn
+    public int Player { get; }
+
+    public int Speed { get; }
+
+    public Turn(int player, int speed)
     {
-        int Player { get; }
-        void ExecuteTurn();
+        Player = player;
+        Speed = speed;
+    }
+    public void ExecuteTurn()
+    {
+        Debug.Log($"Player {Player} executes their turn!");
     }
 }

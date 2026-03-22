@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bea5a0bef579124bba31ac4aa5f66a4, type: 3}
+  m_Name: Bird
+  m_EditorClassIdentifier: Assembly-CSharp::Character
+  portrait: {fileID: 0}
+  battleSprite: {fileID: 0}
+  idleAnimation: {fileID: 0}
+  faintAnimation: {fileID: 0}
+  characterName: Bird
+  characterColor: 0
+  baseHealth: 13
+  baseAttack: 13
+  baseSpeed: 74
+  investedHealth: 13
+  investedAttack: 13
+  investedSpeed: 74
+  moves:
+  - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
+  - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
+  - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
+  - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
