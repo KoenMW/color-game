@@ -17,46 +17,50 @@ public class BattleManager : MonoBehaviour
     private BattleState currentState = BattleState.WaitingForMoves;
     private int turnCounter = 0;
 
-    private List<PlayerTurn> activePlayers = new List<PlayerTurn>();
-    private List<ITurn> queuedTurns = new List<ITurn>();
+    private Dictionary<int, Player> activePlayers = new Dictionary<int, Player>();
+    private List<Turn> queuedTurns = new List<Turn>();
 
     void Start()
     {
-        // When the game starts, the Boss finds all players automatically
-        activePlayers = FindObjectsByType<PlayerTurn>(FindObjectsSortMode.None).ToList();
-        Debug.Log($"Battle Boss found {activePlayers.Count} players. Waiting for moves...");
+    }
+
+    public int RegisterPlayer(Player player)
+    {
+        activePlayers.Add(activePlayers.Count, player);
+        return activePlayers.Count - 1;
+    }
+
+    public void UnregisterPlayer(Player player)
+    {
+        activePlayers.Remove(player.playerIndex);
+    }
+
+    // This is called by players to submit their turn for the current round
+    public void SubmitTurn(Turn turn)
+    {
+        if (currentState != BattleState.WaitingForMoves)
+        {
+            Debug.LogWarning($"Player {turn.Player} tried to submit a turn, but we're currently {currentState}!");
+            return;
+        }
+        if (queuedTurns.Any(t => t.Player == turn.Player))
+        {
+            Debug.LogWarning($"Player {turn.Player} already submitted a turn this round!");
+            return;
+        }
+
+        queuedTurns.Add(turn);
+        Debug.Log($"Player {turn.Player} submitted a turn with Speed {turn.Speed}.");
+
+        if (queuedTurns.Count == activePlayers.Count)
+        {
+            currentState = BattleState.Resolving;
+            ResolveRound();
+        }
     }
 
     void Update()
     {
-        // The Boss ONLY listens to the keyboard if it is the "Waiting" phase
-        if (currentState == BattleState.WaitingForMoves)
-        {
-            CheckPlayerInputs();
-        }
-    }
-
-    private void CheckPlayerInputs()
-    {
-        foreach (var player in activePlayers)
-        {
-            // If this player already locked in a move, skip them
-            if (queuedTurns.Any(t => t.Player == player.Player)) continue;
-
-            // Check if THIS specific player's key was pressed
-            if (Keyboard.current != null && Keyboard.current[player.TurnKey].wasPressedThisFrame)
-            {
-                queuedTurns.Add(player);
-                Debug.Log($"Player {player.Player} locked in a move with Speed {player.Speed}.");
-
-                // If everyone has locked in, change the state!
-                if (queuedTurns.Count == activePlayers.Count)
-                {
-                    currentState = BattleState.Resolving; // Lock out the keyboard!
-                    ResolveRound();
-                }
-            }
-        }
     }
 
     private void ResolveRound()
@@ -71,7 +75,7 @@ public class BattleManager : MonoBehaviour
             turn.ExecuteTurn();
         }
         queuedTurns.Clear();
-        currentState = BattleState.WaitingForMoves; 
+        currentState = BattleState.WaitingForMoves;
         Debug.Log("Round over! Boss is waiting for new commands...");
     }
 }

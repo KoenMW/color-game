@@ -44,4 +44,9 @@ public class Character : ScriptableObject
             Debug.LogWarning("Mag niet");
         }
     }
+
+    void Start()
+    {
+        baseSpeed += UnityEngine.Random.Range(0, 50); // ! this is temporary for testing
+    }
 }
