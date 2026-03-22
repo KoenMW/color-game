@@ -11,7 +11,7 @@ public class Player : MonoBehaviour
 
     public int playerIndex;
 
-    private BattleCharacter myCharacter;
+    public BattleCharacter myCharacter;
 
     public int Speed => myCharacter != null ? myCharacter.CurrentSpeed : 0;
 
@@ -30,9 +30,17 @@ public class Player : MonoBehaviour
         myCharacter.InjectCharacterData(birdData);
     }
 
+    // needs update to resieve the index of the move to use and the target(s) to use it on
+    // needs update to check if the original character is still on the field (not switched out or fainted) before executing the move
     public void ExecuteTurn()
     {
-        Debug.Log($"Player {playerIndex}'s {myCharacter.gameObject.name} attacks with {Speed} Speed!");
+        if (!battleManager)
+        {
+            Debug.LogError("Battlemanager not found");
+            return;
+        }
+        BaseAttack attack = new BaseAttack(); // 
+        attack.Execute(myCharacter, battleManager.GetOthercharacter(playerIndex)); // ! This is currently only for 2 players, will need to be changed for more
     }
 
     void Update()
@@ -40,7 +48,7 @@ public class Player : MonoBehaviour
         // Keeps trying to find the BattleManager until it succeeds, then registers this player
         if (battleManager == null)
         {
-            battleManager = FindObjectOfType<BattleManager>();
+            battleManager = FindAnyObjectByType<BattleManager>();
             playerIndex = battleManager.RegisterPlayer(this);
             Debug.Log($"Player {playerIndex} registered with BattleManager.");
         }
@@ -54,7 +62,7 @@ public class Player : MonoBehaviour
         // ! This is only for testing of the move system
         if (Keyboard.current != null && Keyboard.current[turnKey].wasPressedThisFrame)
         {
-            battleManager.SubmitTurn(new Turn(playerIndex, Speed));
+            battleManager.SubmitTurn(new Turn(playerIndex, Speed, ExecuteTurn));
         }
     }
 }

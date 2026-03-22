@@ -61,6 +61,7 @@ public class BattleCharacter : MonoBehaviour
 
     public void TakeDamage(int damageAmount)
     {
+        Debug.Log($"{gameObject.name} took {damageAmount} damage!");
         currentHP -= damageAmount;
 
         if (currentHP < 0)
