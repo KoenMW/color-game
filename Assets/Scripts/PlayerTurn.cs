@@ -1,57 +1,37 @@
-using UnityEngine;
 using Assets.Scripts.Interfaces;
-using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerTurn : MonoBehaviour, ITurn, ISubscriber
+public class PlayerTurn : MonoBehaviour, ITurn
 {
     [SerializeField] private int player;
     [SerializeField] private new string name;
-
     [SerializeField] private Key turnKey;
 
-    private BattleManager battleManager;
+    private BattleCharacter myCharacter;
 
     public int Player => player;
+    public int Speed => myCharacter != null ? myCharacter.CurrentSpeed : 0;
 
-    string ISubscriber.Name => name;
+    public Key TurnKey => turnKey;
+
+    void Start()
+    {
+        SetupCharacter();
+    }
+
+    private void SetupCharacter()
+    {
+        Character birdData = Resources.Load<Character>("Objects/Bird");
+        if (birdData == null) return;
+
+        GameObject characterObject = new GameObject($"Active_Bird_Player{player}");
+        myCharacter = characterObject.AddComponent<BattleCharacter>();
+        myCharacter.InjectCharacterData(birdData);
+    }
 
     public void ExecuteTurn()
     {
-        Debug.Log("Player " + player + " executed their turn.");
-    }
-
-    public void OnTurnExecuted(ITurn turn)
-    {
-        Debug.Log("Player " + player + " had their turn executed.");
-    }
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        battleManager = FindFirstObjectByType<BattleManager>();
-        if (battleManager != null)
-        {
-            battleManager.Subscribe(this);
-        }
-        else
-        {
-            Debug.LogWarning("BattleManager not found!");
-        }
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (battleManager == null)
-        {
-            Debug.LogWarning("BattleManager not found!");
-            return;
-        }
-        if (Keyboard.current != null && Keyboard.current[turnKey].wasPressedThisFrame)
-        {
-            battleManager.NextTurn(this);
-        }
+        Debug.Log($"Player {player}'s {myCharacter.gameObject.name} attacks with {Speed} Speed!");
     }
 }

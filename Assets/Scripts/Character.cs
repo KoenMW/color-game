@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Character Build", menuName = "Character Build")]
+[CreateAssetMenu(fileName = "Character", menuName = "Create/Character")]
 public class Character : ScriptableObject
 {
     [SerializeField] private Sprite portrait;
@@ -19,7 +19,7 @@ public class Character : ScriptableObject
     [SerializeField] private int investedAttack;
     [SerializeField] private int investedSpeed;
 
-    [SerializeField] private ICharacterMove[] moves = new ICharacterMove[4];
+    [SerializeField] private CharacterMove[] moves = new CharacterMove[4];
 
     public Sprite Portrait => portrait;
     public Sprite BattleSprite => battleSprite;
@@ -33,7 +33,7 @@ public class Character : ScriptableObject
     public string Name => characterName;
     public ColorEnum Color => characterColor;
 
-    public ICharacterMove[] Moves => moves;
+    public CharacterMove[] Moves => moves;
 
     private void OnValidate()
     {
