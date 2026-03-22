@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class Turn
 {
@@ -6,13 +7,17 @@ public class Turn
 
     public int Speed { get; }
 
-    public Turn(int player, int speed)
+    private Action ExecuteAction;
+
+    public Turn(int player, int speed, Action executeAction)
     {
         Player = player;
         Speed = speed;
+        ExecuteAction = executeAction;
     }
+
     public void ExecuteTurn()
     {
-        Debug.Log($"Player {Player} executes their turn!");
+        ExecuteAction.Invoke();
     }
 }
