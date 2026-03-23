@@ -16,6 +16,7 @@ public class BattleCharacter : MonoBehaviour
     [SerializeField] private CharacterMove[] moves;
 
     public Character Data => characterData;
+    public ColorEnum Color =>characterData.Color;
     public int CurrentHP => currentHP;
     public int CurrentAttack => currentAttack;
     public int CurrentSpeed => currentSpeed;
@@ -53,6 +54,14 @@ public class BattleCharacter : MonoBehaviour
         battleSprite = characterData.BattleSprite;
         idleAnimation = characterData.IdleAnimation;
         faintAnimation = characterData.FaintAnimation;
+        if (characterData.Moves != null)
+        {
+            moves = new CharacterMove[characterData.Moves.Length];
+            for (int i = 0; i < characterData.Moves.Length; i++)
+            {
+                moves[i] = characterData.Moves[i];
+            }
+        }
     }
     public void ChangeMove1(CharacterMove move)
     {
@@ -61,9 +70,8 @@ public class BattleCharacter : MonoBehaviour
 
     public void TakeDamage(int damageAmount)
     {
-        Debug.Log($"{gameObject.name} took {damageAmount} damage!");
         currentHP -= damageAmount;
-
+        Debug.Log($"{gameObject.name} took {damageAmount} damage! Remaining HP: {currentHP} / {characterData.MaxHealth}");
         if (currentHP < 0)
         {
             currentHP = 0;

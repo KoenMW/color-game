@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     [SerializeField] private new string name;
-    [SerializeField] private Key turnKey;
+    [SerializeField] private Key[] moveKeys = new Key[4];
 
     private BattleManager battleManager;
 
@@ -32,14 +32,15 @@ public class Player : MonoBehaviour
 
     // needs update to resieve the index of the move to use and the target(s) to use it on
     // needs update to check if the original character is still on the field (not switched out or fainted) before executing the move
-    public void ExecuteTurn()
+    public void ExecuteTurn(int chosenIndex)
     {
         if (!battleManager)
         {
             Debug.LogError("Battlemanager not found");
             return;
         }
-        BaseAttack attack = new BaseAttack(); // 
+        //Check the button that is pressed move the move nu alleen 0
+        CharacterMove attack = myCharacter.Moves[chosenIndex]; // 
         attack.Execute(myCharacter, battleManager.GetOthercharacter(playerIndex)); // ! This is currently only for 2 players, will need to be changed for more
     }
 
@@ -57,12 +58,17 @@ public class Player : MonoBehaviour
             Debug.LogWarning("BattleManager not found!");
             return;
         }
-
-        // Check for turn key press to submit turn
-        // ! This is only for testing of the move system
-        if (Keyboard.current != null && Keyboard.current[turnKey].wasPressedThisFrame)
+        //kijkt nu naar alle
+        for (int i = 0; i < moveKeys.Length; i++)
         {
-            battleManager.SubmitTurn(new Turn(playerIndex, Speed, ExecuteTurn));
+            if (Keyboard.current[moveKeys[i]].wasPressedThisFrame)
+            {
+                int chosenIndex = i;
+
+                battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(chosenIndex)));
+
+                break;
+            }
         }
     }
 }
