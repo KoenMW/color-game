@@ -305,12 +305,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1496662678}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d56edc27689c4343a6c7afb05d0a00d, type: 3}
+  m_Script: {fileID: 11500000, guid: 8fac53cb56ac2224fb76ca8ec18e4d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  player: 0
-  name: zero
-  turnKey: 1
+  name: Player1
+  moveKeys: 290000002a0000002b0000002c000000
+  playerIndex: 0
+  myCharacter: {fileID: 0}
 --- !u!65 &1496662680
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -758,12 +759,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1933474511}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4d56edc27689c4343a6c7afb05d0a00d, type: 3}
+  m_Script: {fileID: 11500000, guid: 8fac53cb56ac2224fb76ca8ec18e4d72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTurn
-  player: 1
-  name: one
-  turnKey: 2
+  name: Player2
+  moveKeys: 0f000000100000001100000012000000
+  playerIndex: 1
+  myCharacter: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

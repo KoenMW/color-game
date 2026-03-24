@@ -18,8 +18,8 @@ MonoBehaviour:
   faintAnimation: {fileID: 0}
   characterName: Bird
   characterColor: 0
-  baseHealth: 13
-  baseAttack: 13
+  baseHealth: 120
+  baseAttack: 70
   baseSpeed: 74
   investedHealth: 13
   investedAttack: 13
@@ -27,5 +27,5 @@ MonoBehaviour:
   moves:
   - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
   - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
-  - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
-  - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
+  - {fileID: 11400000, guid: d3ba113321bc0ba42bd0d7542c16c3cc, type: 2}
+  - {fileID: 11400000, guid: d3ba113321bc0ba42bd0d7542c16c3cc, type: 2}
