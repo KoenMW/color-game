@@ -5,6 +5,10 @@ public class BattleCharacter : MonoBehaviour
 {
     [SerializeField] private Character characterData;
 
+    //Tijdelijk voor de switch
+    public Player playerOwner; 
+    public int queuedSwitchIndex;
+
     [SerializeField] private int currentHP;
     [SerializeField] private int currentAttack;
     [SerializeField] private int currentSpeed;
@@ -83,14 +87,29 @@ public class BattleCharacter : MonoBehaviour
         }
     }
 
-    public void ChangeAttack(int amount)
+    public void ChangeAttack(int percentAmount)
     {
-        currentAttack += amount;
+        float multiplier = percentAmount / 100f;
+
+        int statChange = Mathf.RoundToInt(characterData.Attack * multiplier);
+
+        currentAttack += statChange;
+
+        if (currentAttack < 1) currentAttack = 1;
+
+        Debug.Log($"{gameObject.name}'s Attack changed by {statChange}! It is now {currentAttack}.");
     }
 
-    public void ChangeSpeed(int amount)
+    public void ChangeSpeed(int percentAmount)
     {
-        currentSpeed += amount;
+        float multiplier = percentAmount / 100f;
+        int statChange = Mathf.RoundToInt(characterData.Speed * multiplier);
+
+        currentSpeed += statChange;
+
+        if (currentSpeed < 1) currentSpeed = 1;
+
+        Debug.Log($"{gameObject.name}'s Speed changed by {statChange}! It is now {currentSpeed}.");
     }
 
     private void HandleFaint()

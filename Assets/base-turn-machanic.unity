@@ -310,8 +310,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   name: Player1
   moveKeys: 290000002a0000002b0000002c000000
+  switchKeys: 1f0000002500000013000000
+  cancelKey: 60
+  startingTeamData:
+  - {fileID: 11400000, guid: ca017b9417a9a78469d4a76c2d4f497d, type: 2}
+  - {fileID: 11400000, guid: ca017b9417a9a78469d4a76c2d4f497d, type: 2}
+  - {fileID: 11400000, guid: 2c3e09b1913a79945992286c8734d03b, type: 2}
   playerIndex: 0
-  myCharacter: {fileID: 0}
+  team: []
+  activeCharacter: {fileID: 0}
 --- !u!65 &1496662680
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -764,8 +771,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTurn
   name: Player2
   moveKeys: 0f000000100000001100000012000000
+  switchKeys: 1f0000002500000013000000
+  cancelKey: 60
+  startingTeamData:
+  - {fileID: 11400000, guid: ca017b9417a9a78469d4a76c2d4f497d, type: 2}
+  - {fileID: 11400000, guid: ca017b9417a9a78469d4a76c2d4f497d, type: 2}
+  - {fileID: 11400000, guid: 2c3e09b1913a79945992286c8734d03b, type: 2}
   playerIndex: 1
-  myCharacter: {fileID: 0}
+  team: []
+  activeCharacter: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

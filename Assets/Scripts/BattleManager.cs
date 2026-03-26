@@ -4,12 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.InputSystem;
 
-// This defines our exact rules for the State Machine
-public enum BattleState
-{
-    WaitingForMoves,
-    Resolving
-}
 
 public class BattleManager : MonoBehaviour
 {
@@ -61,7 +55,7 @@ public class BattleManager : MonoBehaviour
 
     public BattleCharacter GetOthercharacter(int playerIndex)
     {
-        return activePlayers.Where(kvp => kvp.Key != playerIndex).Select(kvp => kvp.Value).ToList()[0].myCharacter; // ! This is currently only for 2 players, will need to be changed for more
+        return activePlayers.Where(kvp => kvp.Key != playerIndex).Select(kvp => kvp.Value).ToList()[0].activeCharacter; // ! This is currently only for 2 players, will need to be changed for more
     }
 
     void Update()
