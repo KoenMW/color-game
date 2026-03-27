@@ -1,8 +1,9 @@
-using UnityEngine;
 using Assets.Scripts.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 
 public class BattleManager : MonoBehaviour
@@ -75,6 +76,13 @@ public class BattleManager : MonoBehaviour
         }
         queuedTurns.Clear();
         currentState = BattleState.WaitingForMoves;
+        foreach (Player p in activePlayers.Values)
+        {
+            if (p != null)
+            {
+                p.StartNewTurn();
+            }
+        }
         Debug.Log("Round over! Boss is waiting for new commands...");
     }
 }

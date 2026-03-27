@@ -91,7 +91,7 @@ public class BattleCharacter : MonoBehaviour
     {
         float multiplier = percentAmount / 100f;
 
-        int statChange = (int)(character.Attack * multiplier)
+        int statChange = (int)(characterData.Attack * multiplier);
 
         currentAttack += statChange;
 

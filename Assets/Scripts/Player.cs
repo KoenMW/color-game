@@ -114,6 +114,7 @@ public class Player : MonoBehaviour
                     return;
                 }
                 battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(chosenIndex)));
+                currentInputState = PlayerInputState.Waiting;
                 return;
             }
         }
@@ -139,11 +140,9 @@ public class Player : MonoBehaviour
                     Debug.LogWarning("You can't switch to that character! Pick another or Cancel.");
                     continue;
                 }
-
                 activeCharacter.queuedSwitchIndex = switchTargetIndex;
-                int finalMoveIndex = pendingMoveIndex;
-                battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(finalMoveIndex)));
-                currentInputState = PlayerInputState.ChoosingAction;
+                battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(pendingMoveIndex)));
+                currentInputState = PlayerInputState.Waiting;
                 return;
             }
         }
@@ -169,5 +168,9 @@ public class Player : MonoBehaviour
         activeCharacter.gameObject.SetActive(true);
 
         Debug.Log($"Player {playerIndex} sent out {activeCharacter.gameObject.name}!");
+    }
+    public void StartNewTurn()
+    {
+        currentInputState = PlayerInputState.ChoosingAction;
     }
 }

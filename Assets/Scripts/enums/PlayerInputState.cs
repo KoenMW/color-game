@@ -3,5 +3,6 @@ using UnityEngine;
 public enum PlayerInputState
 {
     ChoosingAction,
-    ChoosingSwitchTarget
+    ChoosingSwitchTarget,
+    Waiting
 }
