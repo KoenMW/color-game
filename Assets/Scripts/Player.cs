@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private new string name;
 
-    private PlayerInputState currentInputState = PlayerInputState.ChoosingAction;
+    [SerializeField] private PlayerInputState currentInputState = PlayerInputState.ChoosingAction;
     private int pendingMoveIndex = -1; 
 
     [SerializeField] private Key[] moveKeys = new Key[4];
@@ -40,6 +40,10 @@ public class Player : MonoBehaviour
         else if (currentInputState == PlayerInputState.ChoosingSwitchTarget)
         {
             SwitchCharacter();
+        }
+        else if (currentInputState == PlayerInputState.ForcedSwitchTarget)
+        {
+            HandleForcedSwitch();
         }
     }
     private void SetupTeam()
@@ -75,6 +79,11 @@ public class Player : MonoBehaviour
         if (!battleManager)
         {
             Debug.LogError("Battlemanager not found");
+            return;
+        }
+        if (activeCharacter.CurrentHP <= 0)
+        {
+            Debug.Log($"{activeCharacter.gameObject.name} fainted and cannot attack!");
             return;
         }
         BattleCharacter target = battleManager.GetOthercharacter(playerIndex);
@@ -113,8 +122,8 @@ public class Player : MonoBehaviour
                     Debug.Log($"[Player {playerIndex}] Selected Switch! Press your Switch Keys to pick a teammate, or Cancel to go back.");
                     return;
                 }
-                battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(chosenIndex)));
                 currentInputState = PlayerInputState.Waiting;
+                battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(chosenIndex)));
                 return;
             }
         }
@@ -141,8 +150,8 @@ public class Player : MonoBehaviour
                     continue;
                 }
                 activeCharacter.queuedSwitchIndex = switchTargetIndex;
-                battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(pendingMoveIndex)));
                 currentInputState = PlayerInputState.Waiting;
+                battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(pendingMoveIndex)));
                 return;
             }
         }
@@ -169,8 +178,54 @@ public class Player : MonoBehaviour
 
         Debug.Log($"Player {playerIndex} sent out {activeCharacter.gameObject.name}!");
     }
+    private void HandleForcedSwitch()
+    {
+        for (int i = 0; i < switchKeys.Length; i++)
+        {
+            if (Keyboard.current[switchKeys[i]].wasPressedThisFrame)
+            {
+                if (team[i].CurrentHP <= 0 || team[i] == activeCharacter)
+                {
+                    Debug.LogWarning("That character is dead! Pick another.");
+                    continue;
+                }
+                currentInputState = PlayerInputState.Waiting;
+                PerformSwitch(i);
+
+                battleManager.CheckForcedSwitchesComplete();
+
+                return;
+            }
+        }
+    }
     public void StartNewTurn()
     {
+        if (currentInputState == PlayerInputState.ForcedSwitchTarget)
+        {
+            return;
+        }
         currentInputState = PlayerInputState.ChoosingAction;
+    }
+    public void TriggerForcedSwitch()
+    {
+        bool hasAliveTeammates = false;
+        foreach (BattleCharacter teammate in team)
+        {
+            if (teammate.CurrentHP > 0)
+            {
+                hasAliveTeammates = true;
+                break; 
+            }
+        }
+
+        if (!hasAliveTeammates)
+        {
+            Debug.Log($"[Player {playerIndex}] has no living characters left!");
+            battleManager.HandlePlayerLoss(this); 
+            return; 
+        }
+
+        currentInputState = PlayerInputState.ForcedSwitchTarget;
+        Debug.Log($"[Player {playerIndex}] {activeCharacter.gameObject.name} fainted! You MUST choose a replacement.");
     }
 }

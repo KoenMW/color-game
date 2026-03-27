@@ -114,6 +114,11 @@ public class BattleCharacter : MonoBehaviour
 
     private void HandleFaint()
     {
-        Debug.Log("faint");
+        Debug.Log($"{gameObject.name} fainted!");
+
+        if (playerOwner != null)
+        {
+            playerOwner.TriggerForcedSwitch();
+        }
     }
 }

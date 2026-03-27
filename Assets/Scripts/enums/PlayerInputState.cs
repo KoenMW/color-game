@@ -4,5 +4,6 @@ public enum PlayerInputState
 {
     ChoosingAction,
     ChoosingSwitchTarget,
-    Waiting
+    Waiting,
+    ForcedSwitchTarget
 }

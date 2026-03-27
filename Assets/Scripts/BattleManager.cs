@@ -75,14 +75,70 @@ public class BattleManager : MonoBehaviour
             turn.ExecuteTurn();
         }
         queuedTurns.Clear();
-        currentState = BattleState.WaitingForMoves;
+        if (currentState == BattleState.GameOver)
+        {
+            Debug.Log("The battle is over! No more turns.");
+            return;
+        }
+        bool someoneDied = false;
         foreach (Player p in activePlayers.Values)
         {
-            if (p != null)
+            if (p.activeCharacter.CurrentHP <= 0)
+            {
+                someoneDied = true;
+            }
+        }
+
+        if (someoneDied)
+        {
+            currentState = BattleState.WaitingForForcedSwitch;
+            Debug.Log("Waiting for fainted characters to be replaced...");
+        }
+        else
+        {
+            currentState = BattleState.WaitingForMoves;
+            foreach (Player p in activePlayers.Values)
             {
                 p.StartNewTurn();
             }
+            Debug.Log("Round over! Waiting for new commands...");
         }
-        Debug.Log("Round over! Boss is waiting for new commands...");
     }
+    public void CheckForcedSwitchesComplete()
+    {
+        if (currentState != BattleState.WaitingForForcedSwitch) return;
+
+        bool stillWaiting = false;
+        foreach (Player p in activePlayers.Values)
+        {
+            if (p.activeCharacter.CurrentHP <= 0)
+            {
+                stillWaiting = true;
+            }
+        }
+        if (!stillWaiting)
+        {
+            currentState = BattleState.WaitingForMoves;
+            foreach (Player p in activePlayers.Values)
+            {
+                p.StartNewTurn();
+            }
+            Debug.Log("All replacements sent out! Starting new round.");
+        }
+    }
+    public void HandlePlayerLoss(Player loser)
+    {
+        Debug.Log($"!!! PLAYER {loser.playerIndex} HAS LOST THE BATTLE !!!");
+
+        currentState = BattleState.GameOver;
+
+        foreach (Player p in activePlayers.Values)
+        {
+            if (p != loser)
+            {
+                Debug.Log($"PLAYER {p.playerIndex} WINS!");
+            }
+        }
+    }
+
 }
