@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
+        if (Keyboard.current == null) return;
         CheckBattleManager();
         if (currentInputState == PlayerInputState.ChoosingAction)
         {
@@ -159,7 +160,6 @@ public class Player : MonoBehaviour
             }
             return;
         }
-        if (Keyboard.current == null) return;
     }
     public void PerformSwitch(int newTeamIndex)
     {
