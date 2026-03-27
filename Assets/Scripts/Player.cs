@@ -122,8 +122,9 @@ public class Player : MonoBehaviour
                     Debug.Log($"[Player {playerIndex}] Selected Switch! Press your Switch Keys to pick a teammate, or Cancel to go back.");
                     return;
                 }
+                MovePriority movePriority = chosenMove.Priority;
                 currentInputState = PlayerInputState.Waiting;
-                battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(chosenIndex)));
+                battleManager.SubmitTurn(new Turn(playerIndex, Speed, movePriority, () => ExecuteTurn(chosenIndex)));
                 return;
             }
         }
@@ -151,7 +152,8 @@ public class Player : MonoBehaviour
                 }
                 activeCharacter.queuedSwitchIndex = switchTargetIndex;
                 currentInputState = PlayerInputState.Waiting;
-                battleManager.SubmitTurn(new Turn(playerIndex, Speed, () => ExecuteTurn(pendingMoveIndex)));
+                MovePriority switchPriority = activeCharacter.Moves[pendingMoveIndex].Priority;
+                battleManager.SubmitTurn(new Turn(playerIndex, Speed, switchPriority, () => ExecuteTurn(pendingMoveIndex)));
                 return;
             }
         }

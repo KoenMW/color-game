@@ -68,7 +68,10 @@ public class BattleManager : MonoBehaviour
         turnCounter++;
         Debug.Log($"--- RESOLVING ROUND {turnCounter} ---");
 
-        queuedTurns = queuedTurns.OrderByDescending(t => t.Speed).ToList();
+        queuedTurns = queuedTurns
+            .OrderByDescending(t => t.MovePriority)
+            .ThenByDescending(t => t.Speed)
+            .ToList();
 
         foreach (var turn in queuedTurns)
         {

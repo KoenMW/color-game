@@ -12,12 +12,14 @@ public abstract class CharacterMove : ScriptableObject
     [SerializeField] private int power;
     [SerializeField] private int accuracy;
     [SerializeField] private int maxPP;
+    [SerializeField] private MovePriority priority;
     public string Name => moveName;
     public string Description => description;
     public ColorEnum Type => type;
     public int Power => power;
     public int Accuracy => accuracy;
     public int MaxPP => maxPP;
+    public MovePriority Priority => priority;
 
     public abstract void Execute(BattleCharacter user, BattleCharacter target);
     public static float GetDamageAmplifier(ColorEnum attacker, ColorEnum defender)
