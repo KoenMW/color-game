@@ -18,14 +18,14 @@ MonoBehaviour:
   faintAnimation: {fileID: 0}
   characterName: Pizza
   characterColor: 0
-  baseHealth: 1000
+  baseHealth: 50
   baseAttack: 10
   baseSpeed: 10
   investedHealth: 33
   investedAttack: 33
   investedSpeed: 34
   moves:
-  - {fileID: 11400000, guid: db75c73af0c777e4db0a0fab5e89c6c8, type: 2}
+  - {fileID: 11400000, guid: 9a31339f5e1c4b548aac8870afcab0b5, type: 2}
   - {fileID: 11400000, guid: db75c73af0c777e4db0a0fab5e89c6c8, type: 2}
   - {fileID: 11400000, guid: db75c73af0c777e4db0a0fab5e89c6c8, type: 2}
   - {fileID: 11400000, guid: db75c73af0c777e4db0a0fab5e89c6c8, type: 2}
