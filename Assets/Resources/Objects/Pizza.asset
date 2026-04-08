@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7bea5a0bef579124bba31ac4aa5f66a4, type: 3}
-  m_Name: Bird
+  m_Name: Pizza
   m_EditorClassIdentifier: Assembly-CSharp::Character
   portrait: {fileID: 0}
   battleSprite: {fileID: 0}
   idleAnimation: {fileID: 0}
   faintAnimation: {fileID: 0}
-  characterName: Bird
+  characterName: Pizza
   characterColor: 0
-  baseHealth: 120
-  baseAttack: 70
-  baseSpeed: 74
-  investedHealth: 13
-  investedAttack: 13
-  investedSpeed: 74
+  baseHealth: 50
+  baseAttack: 10
+  baseSpeed: 10
+  investedHealth: 33
+  investedAttack: 33
+  investedSpeed: 34
   moves:
-  - {fileID: 11400000, guid: d3ba113321bc0ba42bd0d7542c16c3cc, type: 2}
-  - {fileID: 11400000, guid: db75c73af0c777e4db0a0fab5e89c6c8, type: 2}
-  - {fileID: 11400000, guid: 1ebd7a1e586e72843935112d8e78fbad, type: 2}
   - {fileID: 11400000, guid: 9a31339f5e1c4b548aac8870afcab0b5, type: 2}
+  - {fileID: 11400000, guid: db75c73af0c777e4db0a0fab5e89c6c8, type: 2}
+  - {fileID: 11400000, guid: db75c73af0c777e4db0a0fab5e89c6c8, type: 2}
+  - {fileID: 11400000, guid: db75c73af0c777e4db0a0fab5e89c6c8, type: 2}

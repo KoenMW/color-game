@@ -1,15 +1,10 @@
-using UnityEngine;
 using Assets.Scripts.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
-// This defines our exact rules for the State Machine
-public enum BattleState
-{
-    WaitingForMoves,
-    Resolving
-}
 
 public class BattleManager : MonoBehaviour
 {
@@ -61,7 +56,7 @@ public class BattleManager : MonoBehaviour
 
     public BattleCharacter GetOthercharacter(int playerIndex)
     {
-        return activePlayers.Where(kvp => kvp.Key != playerIndex).Select(kvp => kvp.Value).ToList()[0].myCharacter; // ! This is currently only for 2 players, will need to be changed for more
+        return activePlayers.Where(kvp => kvp.Key != playerIndex).Select(kvp => kvp.Value).ToList()[0].activeCharacter; // ! This is currently only for 2 players, will need to be changed for more
     }
 
     void Update()
@@ -73,14 +68,80 @@ public class BattleManager : MonoBehaviour
         turnCounter++;
         Debug.Log($"--- RESOLVING ROUND {turnCounter} ---");
 
-        queuedTurns = queuedTurns.OrderByDescending(t => t.Speed).ToList();
+        queuedTurns = queuedTurns
+            .OrderByDescending(t => t.MovePriority)
+            .ThenByDescending(t => t.Speed)
+            .ToList();
 
         foreach (var turn in queuedTurns)
         {
             turn.ExecuteTurn();
         }
         queuedTurns.Clear();
-        currentState = BattleState.WaitingForMoves;
-        Debug.Log("Round over! Boss is waiting for new commands...");
+        if (currentState == BattleState.GameOver)
+        {
+            Debug.Log("The battle is over! No more turns.");
+            return;
+        }
+        bool someoneDied = false;
+        foreach (Player p in activePlayers.Values)
+        {
+            if (p.activeCharacter.CurrentHP <= 0)
+            {
+                someoneDied = true;
+            }
+        }
+
+        if (someoneDied)
+        {
+            currentState = BattleState.WaitingForForcedSwitch;
+            Debug.Log("Waiting for fainted characters to be replaced...");
+        }
+        else
+        {
+            currentState = BattleState.WaitingForMoves;
+            foreach (Player p in activePlayers.Values)
+            {
+                p.StartNewTurn();
+            }
+            Debug.Log("Round over! Waiting for new commands...");
+        }
     }
+    public void CheckForcedSwitchesComplete()
+    {
+        if (currentState != BattleState.WaitingForForcedSwitch) return;
+
+        bool stillWaiting = false;
+        foreach (Player p in activePlayers.Values)
+        {
+            if (p.activeCharacter.CurrentHP <= 0)
+            {
+                stillWaiting = true;
+            }
+        }
+        if (!stillWaiting)
+        {
+            currentState = BattleState.WaitingForMoves;
+            foreach (Player p in activePlayers.Values)
+            {
+                p.StartNewTurn();
+            }
+            Debug.Log("All replacements sent out! Starting new round.");
+        }
+    }
+    public void HandlePlayerLoss(Player loser)
+    {
+        Debug.Log($"!!! PLAYER {loser.playerIndex} HAS LOST THE BATTLE !!!");
+
+        currentState = BattleState.GameOver;
+
+        foreach (Player p in activePlayers.Values)
+        {
+            if (p != loser)
+            {
+                Debug.Log($"PLAYER {p.playerIndex} WINS!");
+            }
+        }
+    }
+
 }
