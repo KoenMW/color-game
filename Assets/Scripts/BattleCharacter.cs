@@ -1,8 +1,11 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using System;
 
 public class BattleCharacter : MonoBehaviour
 {
+    public event Action<int, int> OnHealthChanged;
+
     [SerializeField] private Character characterData;
 
     //Tijdelijk voor de switch
@@ -14,7 +17,7 @@ public class BattleCharacter : MonoBehaviour
     [SerializeField] private int currentSpeed;
 
     [SerializeField] private Sprite portrait;
-    [SerializeField] private Sprite battleSprite;
+    [SerializeField] private GameObject battleModelPrefab;
     [SerializeField] private AnimationClip idleAnimation;
     [SerializeField] private AnimationClip faintAnimation;
     [SerializeField] private CharacterMove[] moves;
@@ -26,7 +29,7 @@ public class BattleCharacter : MonoBehaviour
     public int CurrentSpeed => currentSpeed;
     public CharacterMove[] Moves => moves;
     public Sprite Portrait => portrait;
-    public Sprite BattleSprite => battleSprite;
+    public GameObject BattleModelPrefab => battleModelPrefab;
     public AnimationClip IdleAnimation => idleAnimation;
     public AnimationClip FaintAnimation => faintAnimation;
 
@@ -34,12 +37,14 @@ public class BattleCharacter : MonoBehaviour
     {
         characterData = data;
         InitializeCharacter();
+        OnHealthChanged?.Invoke(currentHP, characterData.MaxHealth);
     }
     void Start()
     {
         if (characterData != null)
         {
             InitializeCharacter();
+            OnHealthChanged?.Invoke(currentHP, characterData.MaxHealth);
             Debug.LogWarning($"Now Character Data assigned to {gameObject.name}!");
         }
         else
@@ -55,7 +60,7 @@ public class BattleCharacter : MonoBehaviour
         currentSpeed = characterData.Speed;
 
         portrait = characterData.Portrait;
-        battleSprite = characterData.BattleSprite;
+        battleModelPrefab = characterData.BattleModelPrefab;
         idleAnimation = characterData.IdleAnimation;
         faintAnimation = characterData.FaintAnimation;
         if (characterData.Moves != null)
@@ -76,6 +81,7 @@ public class BattleCharacter : MonoBehaviour
     {
         currentHP -= damageAmount;
         Debug.Log($"{gameObject.name} took {damageAmount} damage! Remaining HP: {currentHP} / {characterData.MaxHealth}");
+        OnHealthChanged?.Invoke(currentHP, characterData.MaxHealth);
         if (currentHP < 0)
         {
             currentHP = 0;

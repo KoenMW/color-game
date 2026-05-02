@@ -1,18 +1,17 @@
+using System.Collections; // Required for IEnumerator
 using Assets.Scripts.Interfaces;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-
 public class Player : MonoBehaviour
-
 {
     [SerializeField] private new string name;
 
     [SerializeField] private PlayerInputState currentInputState = PlayerInputState.ChoosingAction;
-    private int pendingMoveIndex = -1; 
+    private int pendingMoveIndex = -1;
 
     [SerializeField] private Key[] moveKeys = new Key[4];
-    [SerializeField] private Key[] switchKeys = new Key[3]; 
+    [SerializeField] private Key[] switchKeys = new Key[3];
     [SerializeField] private Key cancelKey = Key.Escape;
     [SerializeField] private Character[] startingTeamData = new Character[3];
 
@@ -29,10 +28,12 @@ public class Player : MonoBehaviour
     {
         SetupTeam();
     }
+
     void Update()
     {
         if (Keyboard.current == null) return;
         CheckBattleManager();
+
         if (currentInputState == PlayerInputState.ChoosingAction)
         {
             DoMove();
@@ -46,6 +47,7 @@ public class Player : MonoBehaviour
             HandleForcedSwitch();
         }
     }
+
     private void SetupTeam()
     {
         team = new BattleCharacter[startingTeamData.Length];
@@ -54,51 +56,90 @@ public class Player : MonoBehaviour
         {
             if (startingTeamData[i] == null) continue;
 
+            // 1. Create the container object for the character
             GameObject characterObject = new GameObject($"Player{playerIndex}_{startingTeamData[i].Name}");
-            BattleCharacter newChar = characterObject.AddComponent<BattleCharacter>();
 
-  
+            // 2. Parent it to this Player object so they stand where the Player is standing
+            characterObject.transform.SetParent(this.transform);
+            characterObject.transform.localPosition = Vector3.zero;
+            characterObject.transform.localRotation = Quaternion.identity;
+
+            BattleCharacter newChar = characterObject.AddComponent<BattleCharacter>();
             newChar.InjectCharacterData(startingTeamData[i]);
             newChar.playerOwner = this;
 
+            // 3. --- Spawn the 3D Visual Model ---
+            if (startingTeamData[i].BattleModelPrefab != null)
+            {
+                GameObject visualModel = Instantiate(startingTeamData[i].BattleModelPrefab, characterObject.transform);
+                visualModel.transform.localPosition = Vector3.zero;
+                visualModel.transform.localRotation = Quaternion.identity;
+            }
+            else
+            {
+                Debug.LogWarning($"[Player {playerIndex}] {startingTeamData[i].Name} does not have a BattleModelPrefab assigned!");
+            }
+
             team[i] = newChar;
 
+            // Hide everyone except the first character
             if (i != 0)
             {
                 characterObject.SetActive(false);
             }
         }
-        if (team.Length > 0)
+
+        if (team.Length > 0 && team[0] != null)
         {
             activeCharacter = team[0];
             Debug.Log($"Player {playerIndex} sent out {activeCharacter.gameObject.name}!");
         }
     }
-    private void ExecuteTurn(int chosenIndex)
+
+    // CHANGED TO IEnumerator to support pausing for UI Dialogs
+    private IEnumerator ExecuteTurn(int chosenIndex)
     {
-        if (!battleManager)
-        {
-            Debug.LogError("Battlemanager not found");
-            return;
-        }
+        if (!battleManager) yield break;
+
         if (activeCharacter.CurrentHP <= 0)
         {
-            Debug.Log($"{activeCharacter.gameObject.name} fainted and cannot attack!");
-            return;
+            if (battleManager.uiManager != null && battleManager.uiManager.dialogBox != null)
+            {
+                yield return battleManager.uiManager.dialogBox.TypeDialog($"{activeCharacter.gameObject.name} fainted and cannot attack!");
+            }
+            yield break;
         }
-        BattleCharacter target = battleManager.GetOthercharacter(playerIndex);
 
+        BattleCharacter target = battleManager.GetOthercharacter(playerIndex);
         CharacterMove chosenMove = activeCharacter.Moves[chosenIndex];
 
         if (chosenMove != null)
         {
+            // 1. Open the text box and wait for a click!
+            if (battleManager.uiManager != null && battleManager.uiManager.dialogBox != null)
+            {
+                // Assuming chosenMove is a ScriptableObject, .name gets the asset name. 
+                // If you have a custom Name property, change .name to .Name
+                yield return battleManager.uiManager.dialogBox.TypeDialog($"{activeCharacter.gameObject.name} used {chosenMove.name}!");
+            }
+
+            // 2. Do the damage math
+            int targetOldHp = target.CurrentHP;
             chosenMove.Execute(activeCharacter, target);
+            int damageDone = targetOldHp - target.CurrentHP;
+
+            // 3. Announce the damage and wait for another click!
+            if (damageDone > 0 && battleManager.uiManager != null && battleManager.uiManager.dialogBox != null)
+            {
+                yield return battleManager.uiManager.dialogBox.TypeDialog($"It dealt {damageDone} damage!");
+            }
         }
         else
         {
             Debug.LogWarning($"Move slot {chosenIndex} is empty!");
         }
     }
+
     private void DoMove()
     {
         for (int i = 0; i < moveKeys.Length; i++)
@@ -117,21 +158,23 @@ public class Player : MonoBehaviour
                 if (chosenMove is SwitchMove)
                 {
                     pendingMoveIndex = chosenIndex;
-
                     currentInputState = PlayerInputState.ChoosingSwitchTarget;
                     Debug.Log($"[Player {playerIndex}] Selected Switch! Press your Switch Keys to pick a teammate, or Cancel to go back.");
                     return;
                 }
+
                 MovePriority movePriority = chosenMove.Priority;
                 currentInputState = PlayerInputState.Waiting;
+
+                // We pass the ExecuteTurn method, which is now an IEnumerator!
                 battleManager.SubmitTurn(new Turn(playerIndex, Speed, movePriority, () => ExecuteTurn(chosenIndex)));
                 return;
             }
         }
     }
+
     private void SwitchCharacter()
     {
-        // wil je switchen
         if (Keyboard.current[cancelKey].wasPressedThisFrame)
         {
             currentInputState = PlayerInputState.ChoosingAction;
@@ -143,21 +186,25 @@ public class Player : MonoBehaviour
         {
             if (Keyboard.current[switchKeys[i]].wasPressedThisFrame)
             {
-                int switchTargetIndex = i; 
+                int switchTargetIndex = i;
 
                 if (team[switchTargetIndex].CurrentHP <= 0 || team[switchTargetIndex] == activeCharacter)
                 {
                     Debug.LogWarning("You can't switch to that character! Pick another or Cancel.");
                     continue;
                 }
+
                 activeCharacter.queuedSwitchIndex = switchTargetIndex;
                 currentInputState = PlayerInputState.Waiting;
                 MovePriority switchPriority = activeCharacter.Moves[pendingMoveIndex].Priority;
+
+                // Submit the switch turn
                 battleManager.SubmitTurn(new Turn(playerIndex, Speed, switchPriority, () => ExecuteTurn(pendingMoveIndex)));
                 return;
             }
         }
     }
+
     private void CheckBattleManager()
     {
         if (battleManager == null)
@@ -171,15 +218,27 @@ public class Player : MonoBehaviour
             return;
         }
     }
+
     public void PerformSwitch(int newTeamIndex)
     {
-        //de switch
+        // 1. Hide the old 3D model
         activeCharacter.gameObject.SetActive(false);
+
+        // 2. Officially change who the active character is
         activeCharacter = team[newTeamIndex];
+
+        // 3. Show the new 3D model
         activeCharacter.gameObject.SetActive(true);
 
         Debug.Log($"Player {playerIndex} sent out {activeCharacter.gameObject.name}!");
+
+        // --- TELL THE UI TO UPDATE! ---
+        if (battleManager != null && battleManager.uiManager != null)
+        {
+            battleManager.uiManager.UpdateCharacterUI(this.playerIndex, this.activeCharacter);
+        }
     }
+
     private void HandleForcedSwitch()
     {
         for (int i = 0; i < switchKeys.Length; i++)
@@ -191,15 +250,15 @@ public class Player : MonoBehaviour
                     Debug.LogWarning("That character is dead! Pick another.");
                     continue;
                 }
+
                 currentInputState = PlayerInputState.Waiting;
                 PerformSwitch(i);
-
                 battleManager.CheckForcedSwitchesComplete();
-
                 return;
             }
         }
     }
+
     public void StartNewTurn()
     {
         if (currentInputState == PlayerInputState.ForcedSwitchTarget)
@@ -208,6 +267,7 @@ public class Player : MonoBehaviour
         }
         currentInputState = PlayerInputState.ChoosingAction;
     }
+
     public void TriggerForcedSwitch()
     {
         bool hasAliveTeammates = false;
@@ -216,15 +276,15 @@ public class Player : MonoBehaviour
             if (teammate.CurrentHP > 0)
             {
                 hasAliveTeammates = true;
-                break; 
+                break;
             }
         }
 
         if (!hasAliveTeammates)
         {
             Debug.Log($"[Player {playerIndex}] has no living characters left!");
-            battleManager.HandlePlayerLoss(this); 
-            return; 
+            battleManager.HandlePlayerLoss(this);
+            return;
         }
 
         currentInputState = PlayerInputState.ForcedSwitchTarget;
