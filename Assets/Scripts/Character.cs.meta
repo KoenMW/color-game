@@ -1,2 +1,15 @@
 fileFormatVersion: 2
 guid: 7bea5a0bef579124bba31ac4aa5f66a4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - portrait: {instanceID: 0}
+  - battleModelPrefab: {fileID: 919132149155446097, guid: 37ec248f1c2771046914230cf856191d, type: 3}
+  - idleAnimation: {instanceID: 0}
+  - faintAnimation: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

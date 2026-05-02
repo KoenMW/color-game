@@ -1,23 +1,20 @@
-using UnityEngine;
 using System;
+using System.Collections;
 
 public class Turn
 {
     public int Player { get; }
-
     public int Speed { get; }
+    public MovePriority MovePriority { get; }
 
-    private Action ExecuteAction;
+    // This holds the Coroutine from the Player script
+    public Func<IEnumerator> TurnAction { get; }
 
-    public Turn(int player, int speed, Action executeAction)
+    public Turn(int player, int speed, MovePriority priority, Func<IEnumerator> action)
     {
         Player = player;
         Speed = speed;
-        ExecuteAction = executeAction;
-    }
-
-    public void ExecuteTurn()
-    {
-        ExecuteAction.Invoke();
+        MovePriority = priority;
+        TurnAction = action;
     }
 }

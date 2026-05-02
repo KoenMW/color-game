@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7bea5a0bef579124bba31ac4aa5f66a4, type: 3}
-  m_Name: Bird
+  m_Name: Mage
   m_EditorClassIdentifier: Assembly-CSharp::Character
   portrait: {fileID: 0}
-  battleSprite: {fileID: 0}
+  battleModelPrefab: {fileID: 919132149155446097, guid: 37ec248f1c2771046914230cf856191d, type: 3}
   idleAnimation: {fileID: 0}
   faintAnimation: {fileID: 0}
-  characterName: Bird
+  characterName: Mage
   characterColor: 0
   baseHealth: 120
   baseAttack: 70
@@ -25,7 +25,7 @@ MonoBehaviour:
   investedAttack: 13
   investedSpeed: 74
   moves:
-  - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
-  - {fileID: 11400000, guid: a6ed0ecf0424ab24d928affd033fa9c9, type: 2}
   - {fileID: 11400000, guid: d3ba113321bc0ba42bd0d7542c16c3cc, type: 2}
-  - {fileID: 11400000, guid: d3ba113321bc0ba42bd0d7542c16c3cc, type: 2}
+  - {fileID: 11400000, guid: db75c73af0c777e4db0a0fab5e89c6c8, type: 2}
+  - {fileID: 11400000, guid: 1ebd7a1e586e72843935112d8e78fbad, type: 2}
+  - {fileID: 11400000, guid: 9a31339f5e1c4b548aac8870afcab0b5, type: 2}
